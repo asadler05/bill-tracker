@@ -158,3 +158,24 @@ button.delete-btn {
   max-height: 800px; /* enough to show full form */
   opacity: 1;
 }
+
+/* FLOATING ACTION BUTTON */
+#fab-add {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px #0004;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
