@@ -1,3 +1,29 @@
+const form = document.getElementById("bill-form");
+const table = document.getElementById("bill-table");
+const themeToggle = document.getElementById("theme-toggle");
+
+let bills = JSON.parse(localStorage.getItem("bills")) || [];
+let theme = localStorage.getItem("theme") || "light";
+
+// Apply saved theme
+document.body.classList.toggle("dark", theme === "dark");
+themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+
+function saveBills() {
+  localStorage.setItem("bills", JSON.stringify(bills));
+}
+
+// Calculate next recurring due date
+function nextRecurringDate(due, type) {
+  const d = new Date(due);
+
+  if (type === "monthly") d.setMonth(d.getMonth() + 1);
+  if (type === "quarterly") d.setMonth(d.getMonth() + 3);
+  if (type === "yearly") d.setFullYear(d.getFullYear() + 1);
+
+  return d.toISOString().split("T")[0];
+}
+
 function renderBills() {
   table.innerHTML = "";
 
@@ -28,6 +54,7 @@ function renderBills() {
     row.querySelector("input").addEventListener("change", () => {
       bill.paid = !bill.paid;
 
+      // Auto-advance recurring bills
       if (bill.paid && bill.recurring !== "none") {
         bill.due = nextRecurringDate(bill.due, bill.recurring);
         bill.paid = false;
@@ -37,56 +64,8 @@ function renderBills() {
       renderBills();
     });
 
-    // Delete
+    // Delete bill
     row.querySelector("button").addEventListener("click", () => {
       bills.splice(index, 1);
       saveBills();
-      renderBills();
-    });
-
-    // Editable amount
-    const amountCell = row.querySelector(".amount-cell");
-    amountCell.addEventListener("click", () => {
-      const input = document.createElement("input");
-      input.type = "number";
-      input.value = bill.amount;
-      input.className = "edit-input";
-
-      amountCell.innerHTML = "";
-      amountCell.appendChild(input);
-      input.focus();
-
-      const save = () => {
-        bill.amount = input.value;
-        saveBills();
-        renderBills();
-      };
-
-      input.addEventListener("blur", save);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") save();
-      });
-    });
-
-    table.appendChild(row);
-  });
-}
-
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const bill = {
-    name: document.getElementById("bill-name").value,
-    amount: document.getElementById("bill-amount").value,
-    due: document.getElementById("bill-due").value,
-    category: document.getElementById("bill-category").value,
-    recurring: document.getElementById("bill-recurring").value,
-    link: document.getElementById("bill-link").value,
-    paid: false
-  };
-
-  bills.push(bill);
-  saveBills();
-  renderBills();
-  form.reset();
-});
+      render
