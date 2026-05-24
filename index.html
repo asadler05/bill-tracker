@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bill Tracker</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Bill Tracker</h1>
+
+  <form id="bill-form">
+    <input type="text" id="bill-name" placeholder="Bill name" required>
+    <input type="number" id="bill-amount" placeholder="Amount" required>
+    <input type="date" id="bill-due" required>
+    <button type="submit">Add Bill</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Bill</th>
+        <th>Amount</th>
+        <th>Due</th>
+        <th>Paid</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="bill-table"></tbody>
+  </table>
+
+  <script src="app.js"></script>
+</body>
+</html>
