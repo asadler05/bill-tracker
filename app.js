@@ -32,6 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const fab = document.getElementById("fab-add");
   const formContainer = document.getElementById("form-container");
 
+  document.getElementById("cancel-add").addEventListener("click", () => {
+    vibrate(20);                  // soft cancel bump
+    form.reset();
+    formContainer.classList.remove("open");
+  });
+
+
   function vibrate(ms) {
     if (navigator.vibrate) navigator.vibrate(ms);
   }
@@ -397,6 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // REGISTER SERVICE WORKER
   // ------------------------------
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    navigator.serviceWorker.register("service-worker.js").catch(() => { });
   }
 });
