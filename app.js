@@ -87,6 +87,9 @@ document.addEventListener("DOMContentLoaded", () => {
     table.innerHTML = "";
     cards.innerHTML = "";
 
+    // Sort bills by due date (earliest first)
+    bills.sort((a, b) => new Date(a.due) - new Date(b.due));
+
     bills.forEach((bill, index) => {
       const diffDays = getDiffDays(bill.due);
 
@@ -105,7 +108,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="editable amount-cell">$${bill.amount}</td>
         <td class="editable due-cell">${bill.due}</td>
         <td>${bill.recurring}</td>
-        <td>${bill.link ? `<a href="${bill.link}" target="_blank">Pay</a>` : ""}</td>
+        <td class="editable link-cell">
+          ${bill.link ? `<a href="${bill.link}" target="_blank">${bill.link}</a>` : ""}
+        </td>
         <td><input type="checkbox" ${bill.paid ? "checked" : ""}></td>
         <td><button class="delete-btn">X</button></td>
       `;
@@ -169,6 +174,32 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
 
+      // Inline link edit
+      row.querySelector(".link-cell").addEventListener("click", () => {
+        const cell = row.querySelector(".link-cell");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = bill.link || "";
+        input.className = "edit-input";
+        cell.innerHTML = "";
+        cell.appendChild(input);
+        input.focus();
+
+        const save = () => {
+          let val = input.value.trim();
+          if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
+            val = "https://" + val;
+          }
+          bill.link = val;
+          saveBills();
+          renderBills();
+        };
+
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", e => e.key === "Enter" && save());
+      });
+
+
       table.appendChild(row);
 
       // ------------------------------
@@ -191,7 +222,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="card-row editable amount-card"><strong>Amount:</strong> $${bill.amount}</div>
           <div class="card-row editable due-card"><strong>Due:</strong> ${bill.due}</div>
           <div class="card-row"><strong>Recurring:</strong> ${bill.recurring}</div>
-          <div class="card-row">${bill.link ? `<a href="${bill.link}" target="_blank" class="pay-btn">Pay</a>` : ""}</div>
+          <div class="card-row editable link-card">
+            ${bill.link ? `<a href="${bill.link}" target="_blank">${bill.link}</a>` : ""}
+          </div>
           <div class="card-row"><label><input type="checkbox" ${bill.paid ? "checked" : ""}> Paid</label></div>
         </div>
         <div class="swipe-delete">Delete</div>
@@ -255,6 +288,32 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("blur", save);
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
+
+      // Inline link edit (mobile card)
+      card.querySelector(".link-card").addEventListener("click", () => {
+        const cell = card.querySelector(".link-card");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = bill.link || "";
+        input.className = "edit-input";
+        cell.innerHTML = "<strong>Link:</strong> ";
+        cell.appendChild(input);
+        input.focus();
+
+        const save = () => {
+          let val = input.value.trim();
+          if (val && !val.startsWith("http://") && !val.startsWith("https://")) {
+            val = "https://" + val;
+          }
+          bill.link = val;
+          saveBills();
+          renderBills();
+        };
+
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", e => e.key === "Enter" && save());
+      });
+
 
       // ------------------------------
       // SWIPE LOGIC (Safari‑optimized)

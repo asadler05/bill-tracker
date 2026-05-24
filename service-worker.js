@@ -1,7 +1,7 @@
 // ------------------------------
 // VERSION — bump this on each deploy
 // ------------------------------
-const SW_VERSION = "v1.0.5";
+const SW_VERSION = "v1.0.6";
 
 // ------------------------------
 // Notify clients that a new SW is installed
