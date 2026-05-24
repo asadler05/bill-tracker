@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Delete
       row.querySelector(".delete-btn").addEventListener("click", () => {
-        vibrate(20);
+        vibrate(30);
         bills.splice(index, 1);
         saveBills();
         renderBills();
