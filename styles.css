@@ -146,3 +146,15 @@ button.delete-btn {
     font-size: 14px;
   }
 }
+
+#form-container {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height .35s ease, opacity .35s ease;
+}
+
+#form-container.open {
+  max-height: 800px; /* enough to show full form */
+  opacity: 1;
+}
