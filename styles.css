@@ -71,3 +71,13 @@ button.delete-btn {
   padding: 6px 10px;
   cursor: pointer;
 }
+
+.editable {
+  cursor: pointer;
+}
+
+.edit-input {
+  width: 80px;
+  padding: 4px;
+  font-size: 15px;
+}
