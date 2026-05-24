@@ -1,127 +1,98 @@
-document.addEventListener("DOMContentLoaded", () => {
+function renderBills() {
+  table.innerHTML = "";
 
-  const form = document.getElementById("bill-form");
-  const table = document.getElementById("bill-table");
-  const themeToggle = document.getElementById("theme-toggle");
+  bills.sort((a, b) => new Date(a.due) - new Date(b.due));
 
-  let bills = JSON.parse(localStorage.getItem("bills")) || [];
-  let theme = localStorage.getItem("theme") || "light";
+  bills.forEach((bill, index) => {
+    const row = document.createElement("tr");
+    if (bill.paid) row.classList.add("paid");
 
-  // Apply saved theme
-  document.body.classList.toggle("dark", theme === "dark");
-  themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+    row.innerHTML = `
+      <td>${bill.name}</td>
 
-  function saveBills() {
-    localStorage.setItem("bills", JSON.stringify(bills));
-  }
+      <td class="editable amount-cell">$${bill.amount}</td>
 
-  // Calculate next recurring due date
-  function nextRecurringDate(due, type) {
-    const d = new Date(due);
+      <td class="editable due-cell">${bill.due}</td>
 
-    if (type === "monthly") d.setMonth(d.getMonth() + 1);
-    if (type === "quarterly") d.setMonth(d.getMonth() + 3);
-    if (type === "yearly") d.setFullYear(d.getFullYear() + 1);
+      <td>${bill.category}</td>
+      <td>${bill.recurring}</td>
 
-    return d.toISOString().split("T")[0];
-  }
+      <td>
+        ${bill.link ? `<a href="${bill.link}" target="_blank">Pay</a>` : ""}
+      </td>
 
-  function renderBills() {
-    table.innerHTML = "";
+      <td><input type="checkbox" ${bill.paid ? "checked" : ""}></td>
+      <td><button class="delete-btn">X</button></td>
+    `;
 
-    bills.sort((a, b) => new Date(a.due) - new Date(b.due));
+    // Toggle paid
+    row.querySelector("input").addEventListener("change", () => {
+      bill.paid = !bill.paid;
 
-    bills.forEach((bill, index) => {
-      const row = document.createElement("tr");
-      if (bill.paid) row.classList.add("paid");
+      if (bill.paid && bill.recurring !== "none") {
+        bill.due = nextRecurringDate(bill.due, bill.recurring);
+        bill.paid = false;
+      }
 
-      row.innerHTML = `
-        <td>${bill.name}</td>
-
-        <td class="editable amount-cell">$${bill.amount}</td>
-
-        <td>${bill.due}</td>
-        <td>${bill.category}</td>
-        <td>${bill.recurring}</td>
-
-        <td>
-          ${bill.link ? `<a href="${bill.link}" target="_blank">Pay</a>` : ""}
-        </td>
-
-        <td><input type="checkbox" ${bill.paid ? "checked" : ""}></td>
-        <td><button class="delete-btn">X</button></td>
-      `;
-
-      // Toggle paid
-      row.querySelector("input").addEventListener("change", () => {
-        bill.paid = !bill.paid;
-
-        // Auto-advance recurring bills
-        if (bill.paid && bill.recurring !== "none") {
-          bill.due = nextRecurringDate(bill.due, bill.recurring);
-          bill.paid = false;
-        }
-
-        saveBills();
-        renderBills();
-      });
-
-      // Delete bill
-      row.querySelector("button").addEventListener("click", () => {
-        bills.splice(index, 1);
-        saveBills();
-        renderBills();
-      });
-
-      // Editable amount
-      const amountCell = row.querySelector(".amount-cell");
-      amountCell.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "number";
-        input.value = bill.amount;
-        input.className = "edit-input";
-
-        amountCell.innerHTML = "";
-        amountCell.appendChild(input);
-        input.focus();
-
-        const save = () => {
-          bill.amount = input.value;
-          saveBills();
-          renderBills();
-        };
-
-        input.addEventListener("blur", save);
-        input.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") save();
-        });
-      });
-
-      table.appendChild(row);
+      saveBills();
+      renderBills();
     });
-  }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+    // Delete bill
+    row.querySelector("button").addEventListener("click", () => {
+      bills.splice(index, 1);
+      saveBills();
+      renderBills();
+    });
 
-    const bill = {
-      name: document.getElementById("bill-name").value,
-      amount: document.getElementById("bill-amount").value,
-      due: document.getElementById("bill-due").value,
-      category: document.getElementById("bill-category").value,
-      recurring: document.getElementById("bill-recurring").value,
-      link: document.getElementById("bill-link").value,
-      paid: false
-    };
+    // Editable amount
+    const amountCell = row.querySelector(".amount-cell");
+    amountCell.addEventListener("click", () => {
+      const input = document.createElement("input");
+      input.type = "number";
+      input.value = bill.amount;
+      input.className = "edit-input";
 
-    bills.push(bill);
-    saveBills();
-    renderBills();
-    form.reset();
+      amountCell.innerHTML = "";
+      amountCell.appendChild(input);
+      input.focus();
+
+      const save = () => {
+        bill.amount = input.value;
+        saveBills();
+        renderBills();
+      };
+
+      input.addEventListener("blur", save);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") save();
+      });
+    });
+
+    // Editable due date
+    const dueCell = row.querySelector(".due-cell");
+    dueCell.addEventListener("click", () => {
+      const input = document.createElement("input");
+      input.type = "date";
+      input.value = bill.due;
+      input.className = "edit-input";
+
+      dueCell.innerHTML = "";
+      dueCell.appendChild(input);
+      input.focus();
+
+      const save = () => {
+        bill.due = input.value;
+        saveBills();
+        renderBills();
+      };
+
+      input.addEventListener("blur", save);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") save();
+      });
+    });
+
+    table.appendChild(row);
   });
-
-  // Theme toggle
-  themeToggle.addEventListener("click", () => {
-    const isDark = document.body.classList.toggle("dark");
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-    themeToggle
+}
