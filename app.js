@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
 
-      // SWIPE LOGIC
+      // SWIPE LOGIC (Safari‑optimized)
       let startX = 0;
       let swiping = false;
 
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         swiping = false;
       });
 
-      // TOUCH DRAG-TO-REORDER (via drag handle)
+      // TOUCH DRAG-TO-REORDER (Safari‑optimized)
       const dragHandle = card.querySelector(".drag-handle");
       let touchStartY = 0;
       let dragging = false;
@@ -267,6 +267,8 @@ document.addEventListener("DOMContentLoaded", () => {
         card.classList.add("dragging-touch");
         card.style.transition = "none";
         cards.insertBefore(placeholder, card.nextSibling);
+
+        requestAnimationFrame(() => placeholder.classList.add("active"));
       });
 
       dragHandle.addEventListener("touchmove", (e) => {
@@ -276,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const y = e.touches[0].clientY;
         const dy = y - touchStartY;
 
-        card.style.transform = `translateY(${dy}px)`;
+        card.style.transform = `translate3d(0, ${dy}px, 0)`;
 
         const cardList = [...cards.children].filter(c => c !== card && c !== placeholder);
 
@@ -286,11 +288,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
           if (y < mid) {
             cards.insertBefore(placeholder, other);
-            break;
-          } else {
-            cards.appendChild(placeholder);
+            return;
           }
         }
+
+        cards.appendChild(placeholder);
       });
 
       dragHandle.addEventListener("touchend", () => {
@@ -303,13 +305,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         cards.insertBefore(card, placeholder);
         placeholder.remove();
-        placeholder = null;
 
-        // Save new order
-        const newOrder = [...cards.querySelectorAll(".bill-card")].map(c => {
-          const name = c.dataset.name;
-          return bills.find(b => b.name === name);
-        });
+        const newOrder = [...cards.querySelectorAll(".bill-card")].map(c =>
+          bills.find(b => b.name === c.dataset.name)
+        );
 
         if (newOrder.length === bills.length) {
           bills = newOrder;
