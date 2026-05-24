@@ -4,14 +4,34 @@
   <meta charset="UTF-8">
   <title>Bill Tracker</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <h1>Bill Tracker</h1>
+  <header>
+    <h1>Bill Tracker</h1>
+    <button id="theme-toggle">🌙</button>
+  </header>
 
   <form id="bill-form">
     <input type="text" id="bill-name" placeholder="Bill name" required>
     <input type="number" id="bill-amount" placeholder="Amount" required>
     <input type="date" id="bill-due" required>
+
+    <select id="bill-category">
+      <option value="Utilities">Utilities</option>
+      <option value="Housing">Housing</option>
+      <option value="Subscriptions">Subscriptions</option>
+      <option value="Insurance">Insurance</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <select id="bill-recurring">
+      <option value="none">One-time</option>
+      <option value="monthly">Monthly</option>
+      <option value="quarterly">Quarterly</option>
+      <option value="yearly">Yearly</option>
+    </select>
+
     <button type="submit">Add Bill</button>
   </form>
 
@@ -21,6 +41,8 @@
         <th>Bill</th>
         <th>Amount</th>
         <th>Due</th>
+        <th>Category</th>
+        <th>Recurring</th>
         <th>Paid</th>
         <th></th>
       </tr>
