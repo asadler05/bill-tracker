@@ -13,32 +13,34 @@
     <h1>Bill Tracker</h1>
     <button id="theme-toggle">🌙</button>
   </header>
+
+  <!-- HIDDEN FORM CONTAINER -->
   <div id="form-container">
-  <form id="bill-form">
-    <input type="text" id="bill-name" placeholder="Bill name" required>
-    <input type="number" id="bill-amount" placeholder="Amount" required>
-    <input type="date" id="bill-due" required>
+    <form id="bill-form">
+      <input type="text" id="bill-name" placeholder="Bill name" required>
+      <input type="number" id="bill-amount" placeholder="Amount" required>
+      <input type="date" id="bill-due" required>
 
-    <select id="bill-category">
-      <option value="Utilities">Utilities</option>
-      <option value="Housing">Housing</option>
-      <option value="Subscriptions">Subscriptions</option>
-      <option value="Insurance">Insurance</option>
-      <option value="Other">Other</option>
-    </select>
+      <select id="bill-category">
+        <option value="Utilities">Utilities</option>
+        <option value="Housing">Housing</option>
+        <option value="Subscriptions">Subscriptions</option>
+        <option value="Insurance">Insurance</option>
+        <option value="Other">Other</option>
+      </select>
 
-    <select id="bill-recurring">
-      <option value="none">One-time</option>
-      <option value="monthly">Monthly</option>
-      <option value="quarterly">Quarterly</option>
-      <option value="yearly">Yearly</option>
-    </select>
+      <select id="bill-recurring">
+        <option value="none">One-time</option>
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="yearly">Yearly</option>
+      </select>
 
-    <input type="url" id="bill-link" placeholder="Payment URL">
+      <input type="url" id="bill-link" placeholder="Payment URL">
 
-    <button type="submit">Add Bill</button>
-  </form>
-    </div>
+      <button type="submit">Add Bill</button>
+    </form>
+  </div>
 
   <!-- DESKTOP TABLE -->
   <table>
@@ -59,7 +61,10 @@
 
   <!-- MOBILE CARDS -->
   <div id="bill-cards" class="cards-container"></div>
+
+  <!-- FLOATING ACTION BUTTON -->
   <button id="fab-add">＋</button>
+
   <script src="app.js"></script>
 </body>
 </html>

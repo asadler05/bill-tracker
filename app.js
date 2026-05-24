@@ -178,19 +178,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
       cards.appendChild(card);
     });
+
+    /* ---------------- SWIPE TO DELETE (MOBILE) ---------------- */
+
+    let startX = 0;
+    let currentX = 0;
+    let swiping = false;
+
+    card.addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+      swiping = true;
+    });
+
+    card.addEventListener("touchmove", (e) => {
+      if (!swiping) return;
+
+      currentX = e.touches[0].clientX;
+      const diff = currentX - startX;
+
+      if (diff < -30) {
+        card.classList.add("swiped");
+      }
+      if (diff > 30) {
+        card.classList.remove("swiped");
+      }
+    });
+
+    card.addEventListener("touchend", () => {
+      swiping = false;
+    });
+
   }
   const fab = document.getElementById("fab-add");
   const formContainer = document.getElementById("form-container");
 
   fab.addEventListener("click", () => {
-  formContainer.classList.toggle("open");
+    formContainer.classList.toggle("open");
 
-  if (formContainer.classList.contains("open")) {
-    document.getElementById("bill-name").focus();
-  }
-});
+    if (formContainer.classList.contains("open")) {
+      document.getElementById("bill-name").focus();
+    }
+  });
 
-  
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 

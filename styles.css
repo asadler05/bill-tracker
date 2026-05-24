@@ -179,3 +179,29 @@ button.delete-btn {
   align-items: center;
   justify-content: center;
 }
+
+/* SWIPE TO DELETE */
+.bill-card {
+  position: relative;
+  transition: transform .25s ease;
+  touch-action: pan-y;
+}
+
+.bill-card.swiped {
+  transform: translateX(-120px);
+}
+
+.bill-card .swipe-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 100%;
+  background: #ff4d4d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border-radius: 0 10px 10px 0;
+}
