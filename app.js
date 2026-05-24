@@ -18,6 +18,19 @@ function vibrate(ms) {
   if (navigator.vibrate) navigator.vibrate(ms);
 }
 
+function formatDateMDY(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return dateStr;
+
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const y = d.getFullYear();
+
+  return `${m}-${day}-${y}`; // MM-DD-YYYY
+}
+
+
 // ===============================
 // Load + Save
 // ===============================
@@ -56,7 +69,7 @@ form.addEventListener("submit", e => {
   const name = form.name.value.trim();
   const amount = form.amount.value.trim();
   const due = form.due.value;
-  const recurring = form.recurring.value.trim() || "None";
+  const recurring = form.recurring.value; // dropdown
   let link = form.link.value.trim();
 
   if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
@@ -184,7 +197,7 @@ function renderBills() {
       <td class="editable name-cell">${bill.name}</td>
       <td class="editable amount-cell">$${bill.amount}</td>
       <td class="editable due-cell">${bill.due}</td>
-      <td class="editable recur-cell">${bill.recurring}</td>
+      <td>${bill.recurring}</td> <!-- NOT editable -->
       <td class="editable link-cell">
         ${bill.link ? `<a href="${bill.link}" target="_blank">${displayLink(bill.link)}</a>` : "Add link"}
       </td>
@@ -217,7 +230,7 @@ function renderBills() {
     makeEditor(".name-cell", "text", (mode, val) => mode === "get" ? bill.name : bill.name = val);
     makeEditor(".amount-cell", "number", (mode, val) => mode === "get" ? bill.amount : bill.amount = val || "0");
     makeEditor(".due-cell", "date", (mode, val) => mode === "get" ? bill.due : bill.due = val);
-    makeEditor(".recur-cell", "text", (mode, val) => mode === "get" ? bill.recurring : bill.recurring = val || "None");
+
     makeEditor(".link-cell", "text", (mode, val) => {
       if (mode === "get") return bill.link;
       if (val && !val.startsWith("http")) val = "https://" + val;
@@ -251,12 +264,12 @@ function renderBills() {
 
           <div class="grid-item">
             <label>Due</label>
-            <div class="value due-value">${bill.due}</div>
+            <div class="value due-value">${formatDateMDY(bill.due)}</div>
           </div>
 
           <div class="grid-item">
             <label>Recurring</label>
-            <div class="value recur-value">${bill.recurring}</div>
+            <div class="value recur-value">${bill.recurring}</div> <!-- NOT editable -->
           </div>
 
           <div class="grid-item">
@@ -304,7 +317,7 @@ function renderBills() {
 
     cardEdit(".amount-value", "number", (mode, val) => mode === "get" ? bill.amount : bill.amount = val || "0");
     cardEdit(".due-value", "date", (mode, val) => mode === "get" ? bill.due : bill.due = val);
-    cardEdit(".recur-value", "text", (mode, val) => mode === "get" ? bill.recurring : bill.recurring = val || "None");
+
     cardEdit(".link-value", "text", (mode, val) => {
       if (mode === "get") return bill.link;
       if (val && !val.startsWith("http")) val = "https://" + val;

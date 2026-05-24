@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bill Tracker</title>
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=1" />
 </head>
 
 <body>
@@ -25,7 +25,12 @@
         <input type="date" name="due" required />
 
         <label>Recurring</label>
-        <input type="text" name="recurring" placeholder="Monthly, Weekly, etc." />
+        <select name="recurring">
+          <option value="None">None</option>
+          <option value="Monthly">Monthly</option>
+          <option value="Weekly">Weekly</option>
+          <option value="Yearly">Yearly</option>
+        </select>
 
         <label>Payment Link</label>
         <input type="text" name="link" placeholder="example.com/pay" />
@@ -62,6 +67,6 @@
 
   </div>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=1"></script>
 </body>
 </html>
