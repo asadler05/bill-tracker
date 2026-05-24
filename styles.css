@@ -1,22 +1,48 @@
-body {
-  font-family: Arial, sans-serif;
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 0 20px;
-  background: #f7f7f7;
+:root {
+  --bg: #f7f7f7;
+  --text: #222;
+  --card: #fff;
+  --accent: #007bff;
 }
 
-h1 {
-  text-align: center;
+body.dark {
+  --bg: #1e1e1e;
+  --text: #e6e6e6;
+  --card: #2a2a2a;
+  --accent: #4da3ff;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  transition: background .3s, color .3s;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#theme-toggle {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 form {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) auto;
   gap: 10px;
-  margin-bottom: 20px;
+  margin: 20px 0;
 }
 
-form input, form button {
+form input, form select, form button {
   padding: 10px;
   font-size: 16px;
 }
@@ -24,13 +50,14 @@ form input, form button {
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--card);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th, td {
   padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
+  border-bottom: 1px solid #4442;
 }
 
 tr.paid {
