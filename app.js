@@ -91,3 +91,71 @@ document.addEventListener("DOMContentLoaded", () => {
           renderBills();
         };
 
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") save();
+        });
+      });
+
+      // Editable due date
+      const dueCell = row.querySelector(".due-cell");
+      dueCell.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "date";
+        input.value = bill.due;
+        input.className = "edit-input";
+
+        dueCell.innerHTML = "";
+        dueCell.appendChild(input);
+        input.focus();
+
+        const save = () => {
+          bill.due = input.value;
+          saveBills();
+          renderBills();
+        };
+
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") save();
+        });
+      });
+
+      table.appendChild(row);
+    });
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const bill = {
+      name: document.getElementById("bill-name").value,
+      amount: document.getElementById("bill-amount").value,
+      due: document.getElementById("bill-due").value,
+      category: document.getElementById("bill-category").value,
+      recurring: document.getElementById("bill-recurring").value,
+      link: document.getElementById("bill-link").value,
+      paid: false
+    };
+
+    bills.push(bill);
+    saveBills();
+    renderBills();
+    form.reset();
+  });
+
+  // Theme toggle
+  themeToggle.addEventListener("click", () => {
+    const isDark = document.body.classList.toggle("dark");
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    themeToggle.textContent = isDark ? "☀️" : "🌙";
+  });
+
+  // Register service worker for PWA
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+  }
+
+  renderBills();
+
+}); // <-- fully closed and correct
