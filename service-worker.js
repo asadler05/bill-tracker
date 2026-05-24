@@ -1,7 +1,7 @@
 // ------------------------------
 // VERSION — bump this on each deploy
 // ------------------------------
-const SW_VERSION = "v1.0.9";
+const SW_VERSION = "v1.0.10";
 
 // ------------------------------
 // INSTALL — activate immediately

@@ -9,6 +9,7 @@
   --accent: #0a84ff;
   --danger: #ff453a;
   --border: #333;
+  --paid: #30d158;
 }
 
 body {
@@ -111,12 +112,9 @@ body {
   text-decoration: underline;
 }
 
-.overdue {
-  border-left: 4px solid var(--danger);
-}
-
-.due-soon {
-  border-left: 4px solid #ff9f0a;
+.paid-row {
+  opacity: 0.5;
+  text-decoration: line-through;
 }
 
 /* ===========================
@@ -143,6 +141,14 @@ body {
   overflow: hidden;
 }
 
+.bill-card.paid .card-content {
+  opacity: 0.5;
+}
+
+.bill-card.paid .card-header {
+  text-decoration: line-through;
+}
+
 /* Swipe Content */
 .card-content {
   position: relative;
@@ -166,7 +172,37 @@ body {
   justify-content: center;
   font-weight: 600;
   z-index: 1;
+  transform: translateX(80px); /* hide it fully behind the card */
 }
+
+
+.bill-card.swiped .swipe-delete {
+  transform: translateX(0);
+}
+
+
+/* ===========================
+   Paid Toggle
+=========================== */
+.paid-toggle {
+  position: absolute;
+  right: 20px;              /* pushes it all the way to the right */
+  top: 50%;                 /* vertical center */
+  transform: translateY(-50%);
+  font-size: 28px;          /* clean emoji size */
+  cursor: pointer;
+  z-index: 3;               /* above swipe layer */
+  background: none;
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+
+.bill-card.swiped .paid-toggle {
+  opacity: 0;
+  pointer-events: none;
+}
+
 
 /* ===========================
    Fintech Grid
@@ -233,6 +269,9 @@ body {
   z-index: 9999;
 }
 
+/* ===========================
+   Update Toast
+=========================== */
 .update-toast {
   position: fixed;
   bottom: 20px;

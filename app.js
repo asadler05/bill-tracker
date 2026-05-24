@@ -13,11 +13,7 @@ function displayLink(url) {
   }
 }
 
-// Soft haptic feedback
-function vibrate(ms) {
-  if (navigator.vibrate) navigator.vibrate(ms);
-}
-
+// Format date as MM-DD-YYYY
 function formatDateMDY(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr);
@@ -27,9 +23,13 @@ function formatDateMDY(dateStr) {
   const day = String(d.getDate()).padStart(2, "0");
   const y = d.getFullYear();
 
-  return `${m}-${day}-${y}`; // MM-DD-YYYY
+  return `${m}-${day}-${y}`;
 }
 
+// Soft haptic feedback
+function vibrate(ms) {
+  if (navigator.vibrate) navigator.vibrate(ms);
+}
 
 // ===============================
 // Load + Save
@@ -69,20 +69,45 @@ form.addEventListener("submit", e => {
   const name = form.name.value.trim();
   const amount = form.amount.value.trim();
   const due = form.due.value;
-  const recurring = form.recurring.value; // dropdown
+  const recurring = form.recurring.value;
   let link = form.link.value.trim();
 
   if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
     link = "https://" + link;
   }
 
-  bills.push({ name, amount, due, recurring, link });
+  bills.push({ name, amount, due, recurring, link, paid: false });
   saveBills();
   form.reset();
   formContainer.classList.remove("open");
   vibrate(20);
   renderBills();
 });
+
+// ===============================
+// Paid Toggle Logic
+// ===============================
+function togglePaid(bill) {
+  bill.paid = !bill.paid;
+
+  if (bill.paid && bill.due) {
+    const d = new Date(bill.due);
+    const recur = bill.recurring.toLowerCase();
+
+    if (recur.includes("month")) {
+      d.setMonth(d.getMonth() + 1);
+    } else if (recur.includes("week")) {
+      d.setDate(d.getDate() + 7);
+    } else if (recur.includes("year")) {
+      d.setFullYear(d.getFullYear() + 1);
+    }
+
+    bill.due = d.toISOString().split("T")[0];
+  }
+
+  saveBills();
+  renderBills();
+}
 
 // ===============================
 // Drag Reorder
@@ -130,6 +155,8 @@ function enableSwipe(card, index) {
 
     if (currentX < 0) {
       content.style.transform = `translateX(${currentX}px)`;
+      if (currentX < -20) card.classList.add("swiped");
+      else card.classList.remove("swiped");
     }
   });
 
@@ -162,7 +189,8 @@ function renderBills() {
     amount: b.amount || "",
     due: b.due || "",
     recurring: b.recurring || "None",
-    link: b.link || ""
+    link: b.link || "",
+    paid: b.paid || false
   }));
   saveBills();
 
@@ -174,35 +202,30 @@ function renderBills() {
   bills.sort((a, b) => new Date(a.due) - new Date(b.due));
 
   bills.forEach((bill, index) => {
-    // Status class
-    let statusClass = "";
-    if (bill.due) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const dueDate = new Date(bill.due);
-      dueDate.setHours(0, 0, 0, 0);
-
-      const diff = (dueDate - today) / (1000 * 60 * 60 * 24);
-      if (diff < 0) statusClass = "overdue";
-      else if (diff <= 3) statusClass = "due-soon";
-    }
-
     // ============================
     // TABLE ROW
     // ============================
     const row = document.createElement("tr");
-    row.className = statusClass;
+    if (bill.paid) row.classList.add("paid-row");
 
     row.innerHTML = `
       <td class="editable name-cell">${bill.name}</td>
       <td class="editable amount-cell">$${bill.amount}</td>
       <td class="editable due-cell">${bill.due}</td>
-      <td>${bill.recurring}</td> <!-- NOT editable -->
+      <td>${bill.recurring}</td>
       <td class="editable link-cell">
         ${bill.link ? `<a href="${bill.link}" target="_blank">${displayLink(bill.link)}</a>` : "Add link"}
       </td>
+      <td>
+        <div class="paid-toggle">✅</div>
+      </td>
       <td><button class="delete-btn">Delete</button></td>
     `;
+
+    // Paid toggle
+    row.querySelector(".paid-toggle").addEventListener("click", () => {
+      togglePaid(bill);
+    });
 
     // Inline editors (table)
     const makeEditor = (selector, type, saveFn) => {
@@ -249,7 +272,8 @@ function renderBills() {
     // FINTECH CARD
     // ============================
     const card = document.createElement("div");
-    card.className = "bill-card " + statusClass;
+    card.className = "bill-card";
+    if (bill.paid) card.classList.add("paid");
     card.dataset.index = index;
 
     card.innerHTML = `
@@ -269,7 +293,7 @@ function renderBills() {
 
           <div class="grid-item">
             <label>Recurring</label>
-            <div class="value recur-value">${bill.recurring}</div> <!-- NOT editable -->
+            <div class="value recur-value">${bill.recurring}</div>
           </div>
 
           <div class="grid-item">
@@ -279,13 +303,19 @@ function renderBills() {
         </div>
       </div>
 
+      <div class="paid-toggle">✅</div>
       <div class="swipe-delete">Delete</div>
     `;
 
-    // Open link on tap (if not editing)
+    // Paid toggle (card)
+    card.querySelector(".paid-toggle").addEventListener("click", e => {
+      e.stopPropagation();
+      togglePaid(bill);
+    });
+
+    // Open link on tap
     const linkEl = card.querySelector(".link-value");
     linkEl.addEventListener("click", e => {
-      if (linkEl.querySelector("input")) return;
       if (bill.link) {
         window.open(bill.link, "_blank");
         e.stopPropagation();
@@ -334,6 +364,9 @@ function renderBills() {
   });
 }
 
+// Initial render
+renderBills();
+
 // ===============================
 // Service Worker Update Checker
 // ===============================
@@ -344,14 +377,12 @@ if ("serviceWorker" in navigator) {
 
       newWorker.addEventListener("statechange", () => {
         if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-          // New version available
           document.getElementById("update-toast").classList.remove("hidden");
         }
       });
     });
   });
 
-  // Update button
   document.getElementById("update-btn").addEventListener("click", () => {
     navigator.serviceWorker.getRegistration().then(reg => {
       if (reg && reg.waiting) {
@@ -360,12 +391,7 @@ if ("serviceWorker" in navigator) {
     });
   });
 
-  // Reload when new SW activates
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     window.location.reload();
   });
 }
-
-
-// Initial render
-renderBills();
