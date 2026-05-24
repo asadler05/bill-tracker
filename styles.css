@@ -66,16 +66,25 @@ th, td {
   white-space: nowrap;
 }
 
-tr.paid {
-  background: #d4ffd4;
-}
-
 button.delete-btn {
   background: #ff4d4d;
   color: white;
   border: none;
   padding: 6px 10px;
   cursor: pointer;
+}
+
+/* SUBTLE OVERDUE / DUE-SOON BORDERS */
+tr.overdue,
+.bill-card.overdue {
+  border-left: 6px solid #ff4d4d;
+  -webkit-border-left: 6px solid #ff4d4d;
+}
+
+tr.due-soon,
+.bill-card.due-soon {
+  border-left: 6px solid #ffb84d;
+  -webkit-border-left: 6px solid #ffb84d;
 }
 
 /* INLINE EDIT */
@@ -98,21 +107,25 @@ button.delete-btn {
   box-shadow: 0 2px 6px #0002;
   position: relative;
   overflow: hidden;
-}
 
-.bill-card.paid {
-  background: #d4ffd4;
+  /* Safari fix */
+  will-change: transform;
+  -webkit-transform: translateZ(0);
 }
 
 .card-content {
   padding: 16px;
   position: relative;
   z-index: 2;
+
   transition: transform .25s ease;
+  -webkit-transition: -webkit-transform .25s ease;
 }
 
+/* SWIPE BEHAVIOR */
 .bill-card.swiped .card-content {
   transform: translateX(-110px);
+  -webkit-transform: translateX(-110px);
 }
 
 .swipe-delete {
@@ -129,13 +142,17 @@ button.delete-btn {
   font-weight: bold;
   z-index: 1;
 
-  /* hidden until swiped */
+  /* Hidden until swiped */
   transform: translateX(110px);
+  -webkit-transform: translateX(110px);
+
   transition: transform .25s ease;
+  -webkit-transition: -webkit-transform .25s ease;
 }
 
 .bill-card.swiped .swipe-delete {
   transform: translateX(0);
+  -webkit-transform: translateX(0);
 }
 
 .card-row {
@@ -166,6 +183,7 @@ button.delete-btn {
   }
 }
 
+/* FORM SLIDE-DOWN */
 #form-container {
   max-height: 0;
   opacity: 0;
@@ -176,17 +194,4 @@ button.delete-btn {
 #form-container.open {
   max-height: 800px;
   opacity: 1;
-}
-
-.overdue {
-  border-left: 6px solid #ff4d4d;
-}
-
-.due-soon {
-  border-left: 6px solid #ffb84d;
-}
-
-.bill-card,
-tr {
-  padding-left: 6px;
 }
