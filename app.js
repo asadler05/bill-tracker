@@ -207,6 +207,9 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBills();
     renderBills();
     form.reset();
+
+    formContainer.classList.remove("open");
+
   });
 
   themeToggle.addEventListener("click", () => {
