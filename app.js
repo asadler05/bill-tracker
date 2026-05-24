@@ -1,3 +1,29 @@
+// ------------------------------
+// SERVICE WORKER UPDATE TOAST LISTENER
+// ------------------------------
+navigator.serviceWorker?.addEventListener("message", (event) => {
+  if (event.data?.type === "NEW_VERSION_AVAILABLE") {
+    showUpdateToast();
+  }
+});
+
+function showUpdateToast() {
+  const toast = document.getElementById("update-toast");
+  toast.classList.remove("hidden");
+
+  // Trigger animation
+  void toast.offsetWidth;
+
+  toast.classList.add("show");
+
+  document.getElementById("update-toast-btn").onclick = () => {
+    location.reload();
+  };
+}
+
+// ------------------------------
+// MAIN APP
+// ------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("bill-form");
   const table = document.getElementById("bill-table");
@@ -57,7 +83,9 @@ document.addEventListener("DOMContentLoaded", () => {
     bills.forEach((bill, index) => {
       const diffDays = getDiffDays(bill.due);
 
+      // ------------------------------
       // TABLE ROW
+      // ------------------------------
       const row = document.createElement("tr");
       if (bill.paid) row.classList.add("paid");
       if (!bill.paid) {
@@ -75,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td><button class="delete-btn">X</button></td>
       `;
 
-      // table paid toggle
+      // Paid toggle
       row.querySelector("input").addEventListener("change", () => {
         bill.paid = !bill.paid;
         if (bill.paid && bill.recurring !== "none") {
@@ -86,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBills();
       });
 
-      // table delete
+      // Delete
       row.querySelector(".delete-btn").addEventListener("click", () => {
         vibrate(20);
         bills.splice(index, 1);
@@ -94,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBills();
       });
 
-      // table amount inline edit
+      // Inline amount edit
       row.querySelector(".amount-cell").addEventListener("click", () => {
         const cell = row.querySelector(".amount-cell");
         const input = document.createElement("input");
@@ -115,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
 
-      // table due inline edit
+      // Inline due edit
       row.querySelector(".due-cell").addEventListener("click", () => {
         const cell = row.querySelector(".due-cell");
         const input = document.createElement("input");
@@ -136,7 +164,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       table.appendChild(row);
 
-      // CARD
+      // ------------------------------
+      // MOBILE CARD
+      // ------------------------------
       const card = document.createElement("div");
       card.className = "bill-card";
       card.dataset.name = bill.name;
@@ -160,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="swipe-delete">Delete</div>
       `;
 
-      // card paid toggle
+      // Paid toggle
       card.querySelector("input").addEventListener("change", () => {
         bill.paid = !bill.paid;
         if (bill.paid && bill.recurring !== "none") {
@@ -171,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBills();
       });
 
-      // card delete
+      // Delete
       card.querySelector(".swipe-delete").addEventListener("click", () => {
         vibrate(20);
         bills.splice(index, 1);
@@ -179,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBills();
       });
 
-      // card amount inline edit
+      // Inline amount edit
       card.querySelector(".amount-card").addEventListener("click", () => {
         const cell = card.querySelector(".amount-card");
         const input = document.createElement("input");
@@ -200,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
 
-      // card due inline edit
+      // Inline due edit
       card.querySelector(".due-card").addEventListener("click", () => {
         const cell = card.querySelector(".due-card");
         const input = document.createElement("input");
@@ -219,7 +249,9 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
 
+      // ------------------------------
       // SWIPE LOGIC (Safari‑optimized)
+      // ------------------------------
       let startX = 0;
       let swiping = false;
 
@@ -249,7 +281,9 @@ document.addEventListener("DOMContentLoaded", () => {
         swiping = false;
       });
 
-      // TOUCH DRAG-TO-REORDER (Safari‑optimized)
+      // ------------------------------
+      // TOUCH DRAG‑TO‑REORDER (via drag handle)
+      // ------------------------------
       const dragHandle = card.querySelector(".drag-handle");
       let touchStartY = 0;
       let dragging = false;
@@ -320,7 +354,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // ------------------------------
   // FORM SUBMIT
+  // ------------------------------
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -352,10 +388,14 @@ document.addEventListener("DOMContentLoaded", () => {
     renderBills();
   });
 
+  // ------------------------------
   // INITIAL RENDER
+  // ------------------------------
   renderBills();
 
-  // PWA SERVICE WORKER
+  // ------------------------------
+  // REGISTER SERVICE WORKER
+  // ------------------------------
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js").catch(() => {});
   }
