@@ -108,18 +108,30 @@ tr.due-soon,
   position: relative;
   overflow: hidden;
 
-  /* Safari fix */
   will-change: transform;
   -webkit-transform: translateZ(0);
 }
 
 .card-content {
-  padding: 16px;
+  padding: 16px 16px 16px 40px;
   position: relative;
   z-index: 2;
 
   transition: transform .25s ease;
   -webkit-transition: -webkit-transform .25s ease;
+}
+
+/* DRAG HANDLE */
+.drag-handle {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  font-size: 18px;
+  color: #999;
+  cursor: grab;
+  touch-action: none;
 }
 
 /* SWIPE BEHAVIOR */
@@ -142,7 +154,6 @@ tr.due-soon,
   font-weight: bold;
   z-index: 1;
 
-  /* Hidden until swiped */
   transform: translateX(110px);
   -webkit-transform: translateX(110px);
 
@@ -166,6 +177,19 @@ tr.due-soon,
   padding: 6px 12px;
   border-radius: 6px;
   text-decoration: none;
+}
+
+/* TOUCH DRAG VISUALS */
+.bill-card.dragging-touch {
+  opacity: 0.7;
+  z-index: 10;
+  position: relative;
+}
+
+.placeholder {
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  margin: 12px 0;
 }
 
 /* RESPONSIVE */
@@ -194,4 +218,20 @@ tr.due-soon,
 #form-container.open {
   max-height: 800px;
   opacity: 1;
+}
+
+/* FAB (if you want basic styling) */
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px #0004;
 }

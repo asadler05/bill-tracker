@@ -99,13 +99,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const cell = row.querySelector(".amount-cell");
         const input = document.createElement("input");
         input.type = "number";
+        input.step = "0.01";
         input.value = bill.amount;
         input.className = "edit-input";
         cell.innerHTML = "";
         cell.appendChild(input);
         input.focus();
         const save = () => {
-          bill.amount = input.value || 0;
+          const val = parseFloat(input.value || "0");
+          bill.amount = isNaN(val) ? 0 : val;
           saveBills();
           renderBills();
         };
@@ -137,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // CARD
       const card = document.createElement("div");
       card.className = "bill-card";
+      card.dataset.name = bill.name;
 
       if (bill.paid) card.classList.add("paid");
       if (!bill.paid) {
@@ -146,6 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.innerHTML = `
         <div class="card-content">
+          <div class="drag-handle">≡</div>
           <div class="card-row"><strong>Bill:</strong> ${bill.name}</div>
           <div class="card-row editable amount-card"><strong>Amount:</strong> $${bill.amount}</div>
           <div class="card-row editable due-card"><strong>Due:</strong> ${bill.due}</div>
@@ -180,13 +184,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const cell = card.querySelector(".amount-card");
         const input = document.createElement("input");
         input.type = "number";
+        input.step = "0.01";
         input.value = bill.amount;
         input.className = "edit-input";
         cell.innerHTML = "<strong>Amount:</strong> ";
         cell.appendChild(input);
         input.focus();
         const save = () => {
-          bill.amount = input.value || 0;
+          const val = parseFloat(input.value || "0");
+          bill.amount = isNaN(val) ? 0 : val;
           saveBills();
           renderBills();
         };
@@ -218,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let swiping = false;
 
       card.addEventListener("touchstart", (e) => {
-        if (e.target.closest(".swipe-delete")) return;
+        if (e.target.closest(".swipe-delete") || e.target.closest(".drag-handle")) return;
         startX = e.touches[0].clientX;
         swiping = true;
       });
@@ -243,6 +249,74 @@ document.addEventListener("DOMContentLoaded", () => {
         swiping = false;
       });
 
+      // TOUCH DRAG-TO-REORDER (via drag handle)
+      const dragHandle = card.querySelector(".drag-handle");
+      let touchStartY = 0;
+      let dragging = false;
+      let placeholder = null;
+
+      dragHandle.addEventListener("touchstart", (e) => {
+        e.stopPropagation();
+        touchStartY = e.touches[0].clientY;
+        dragging = true;
+
+        placeholder = document.createElement("div");
+        placeholder.className = "bill-card placeholder";
+        placeholder.style.height = card.offsetHeight + "px";
+
+        card.classList.add("dragging-touch");
+        card.style.transition = "none";
+        cards.insertBefore(placeholder, card.nextSibling);
+      });
+
+      dragHandle.addEventListener("touchmove", (e) => {
+        if (!dragging) return;
+        e.preventDefault();
+
+        const y = e.touches[0].clientY;
+        const dy = y - touchStartY;
+
+        card.style.transform = `translateY(${dy}px)`;
+
+        const cardList = [...cards.children].filter(c => c !== card && c !== placeholder);
+
+        for (const other of cardList) {
+          const rect = other.getBoundingClientRect();
+          const mid = rect.top + rect.height / 2;
+
+          if (y < mid) {
+            cards.insertBefore(placeholder, other);
+            break;
+          } else {
+            cards.appendChild(placeholder);
+          }
+        }
+      });
+
+      dragHandle.addEventListener("touchend", () => {
+        if (!dragging) return;
+        dragging = false;
+
+        card.classList.remove("dragging-touch");
+        card.style.transition = "";
+        card.style.transform = "";
+
+        cards.insertBefore(card, placeholder);
+        placeholder.remove();
+        placeholder = null;
+
+        // Save new order
+        const newOrder = [...cards.querySelectorAll(".bill-card")].map(c => {
+          const name = c.dataset.name;
+          return bills.find(b => b.name === name);
+        });
+
+        if (newOrder.length === bills.length) {
+          bills = newOrder;
+          saveBills();
+        }
+      });
+
       cards.appendChild(card);
     });
   }
@@ -252,12 +326,17 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const name = document.getElementById("bill-name").value.trim();
-    const amount = parseFloat(document.getElementById("bill-amount").value || "0");
+    const amountVal = document.getElementById("bill-amount").value;
+    const amount = parseFloat(amountVal || "0");
     const due = document.getElementById("bill-due").value;
     const recurring = document.getElementById("bill-recurring").value;
-    const link = document.getElementById("bill-link").value.trim();
+    let link = document.getElementById("bill-link").value.trim();
 
     if (!name || !due) return;
+
+    if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+      link = "https://" + link;
+    }
 
     bills.push({
       name,

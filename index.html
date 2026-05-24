@@ -21,7 +21,7 @@
   <div id="form-container">
     <form id="bill-form">
       <input id="bill-name" type="text" placeholder="Bill name" required>
-      <input id="bill-amount" type="number" placeholder="Amount" step="0.01">
+      <input id="bill-amount" type="number" step="0.01" inputmode="decimal" placeholder="Amount" required>
       <input id="bill-due" type="date" required>
 
       <select id="bill-recurring">
@@ -31,7 +31,7 @@
         <option value="yearly">Yearly</option>
       </select>
 
-      <input id="bill-link" type="url" placeholder="Payment link (optional)">
+      <input id="bill-link" type="text" placeholder="Payment link (optional)">
       <button type="submit">Add Bill</button>
     </form>
   </div>
