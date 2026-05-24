@@ -2,24 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Bill Tracker</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bill Tracker</title>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff">
+
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+
   <header>
     <h1>Bill Tracker</h1>
     <button id="theme-toggle">🌙</button>
   </header>
 
-  <!-- HIDDEN FORM CONTAINER -->
   <div id="form-container">
     <form id="bill-form">
-      <input type="text" id="bill-name" placeholder="Bill name" required>
-      <input type="number" id="bill-amount" placeholder="Amount" required>
-      <input type="date" id="bill-due" required>
+      <input id="bill-name" type="text" placeholder="Bill name" required>
+      <input id="bill-amount" type="number" placeholder="Amount" step="0.01">
+      <input id="bill-due" type="date" required>
 
       <select id="bill-recurring">
         <option value="none">One-time</option>
@@ -28,33 +31,31 @@
         <option value="yearly">Yearly</option>
       </select>
 
-      <input type="url" id="bill-link" placeholder="Payment URL">
-
-      <button type="submit" class="primary-btn">Add Bill</button>
+      <input id="bill-link" type="url" placeholder="Payment link (optional)">
+      <button type="submit">Add Bill</button>
     </form>
   </div>
 
-  <!-- DESKTOP TABLE -->
-  <table>
+  <table id="bill-table">
     <thead>
       <tr>
         <th>Bill</th>
         <th>Amount</th>
         <th>Due</th>
         <th>Recurring</th>
-        <th>Pay</th>
+        <th>Link</th>
         <th>Paid</th>
-        <th></th>
+        <th>Delete</th>
       </tr>
     </thead>
-    <tbody id="bill-table"></tbody>
+    <tbody></tbody>
   </table>
 
-  <!-- MOBILE CARDS -->
-  <div id="bill-cards" class="cards-container"></div>
+  <div class="cards-container">
+    <div id="bill-cards"></div>
+  </div>
 
-  <!-- FLOATING ACTION BUTTON -->
-  <button id="fab-add">＋</button>
+  <button id="fab-add" class="fab">+</button>
 
   <script src="app.js"></script>
 </body>
