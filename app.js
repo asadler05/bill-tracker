@@ -124,14 +124,4 @@ document.addEventListener("DOMContentLoaded", () => {
   themeToggle.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
-    themeToggle.textContent = isDark ? "☀️" : "🌙";
-  });
-
-  // Register service worker for PWA
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-  }
-
-  renderBills();
-
-});
+    themeToggle
