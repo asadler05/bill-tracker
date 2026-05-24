@@ -4,16 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("bill-table");
   const cards = document.getElementById("bill-cards");
   const themeToggle = document.getElementById("theme-toggle");
-  const fab = document.getElementById("fab-add");
-  const formContainer = document.getElementById("form-container");
-
-  fab.addEventListener("click", () => {
-  formContainer.classList.toggle("open");
-
-  if (formContainer.classList.contains("open")) {
-    document.getElementById("bill-name").focus();
-  }
-});
 
   let bills = JSON.parse(localStorage.getItem("bills")) || [];
   let theme = localStorage.getItem("theme") || "light";
@@ -189,7 +179,18 @@ document.addEventListener("DOMContentLoaded", () => {
       cards.appendChild(card);
     });
   }
+  const fab = document.getElementById("fab-add");
+  const formContainer = document.getElementById("form-container");
 
+  fab.addEventListener("click", () => {
+  formContainer.classList.toggle("open");
+
+  if (formContainer.classList.contains("open")) {
+    document.getElementById("bill-name").focus();
+  }
+});
+
+  
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
