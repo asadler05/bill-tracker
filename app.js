@@ -334,5 +334,38 @@ function renderBills() {
   });
 }
 
+// ===============================
+// Service Worker Update Checker
+// ===============================
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js").then(reg => {
+    reg.addEventListener("updatefound", () => {
+      const newWorker = reg.installing;
+
+      newWorker.addEventListener("statechange", () => {
+        if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+          // New version available
+          document.getElementById("update-toast").classList.remove("hidden");
+        }
+      });
+    });
+  });
+
+  // Update button
+  document.getElementById("update-btn").addEventListener("click", () => {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg && reg.waiting) {
+        reg.waiting.postMessage({ action: "skipWaiting" });
+      }
+    });
+  });
+
+  // Reload when new SW activates
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
+}
+
+
 // Initial render
 renderBills();

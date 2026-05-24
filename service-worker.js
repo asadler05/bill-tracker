@@ -1,40 +1,35 @@
 // ------------------------------
 // VERSION — bump this on each deploy
 // ------------------------------
-const SW_VERSION = "v1.0.8";
+const SW_VERSION = "v1.0.9";
 
 // ------------------------------
-// Notify clients that a new SW is installed
+// INSTALL — activate immediately
 // ------------------------------
-async function notifyClientsAboutUpdate() {
-  const allClients = await self.clients.matchAll({ includeUncontrolled: true });
-  for (const client of allClients) {
-    client.postMessage({
-      type: "NEW_VERSION_AVAILABLE",
-      version: SW_VERSION
-    });
-  }
-}
-
-// ------------------------------
-// INSTALL — new SW takes over immediately
-// ------------------------------
-self.addEventListener("install", (event) => {
+self.addEventListener("install", event => {
   self.skipWaiting();
-  notifyClientsAboutUpdate(); // <-- only fires once per new SW
 });
 
 // ------------------------------
-// ACTIVATE — claim all pages
+// ACTIVATE — take control of all pages
 // ------------------------------
-self.addEventListener("activate", (event) => {
+self.addEventListener("activate", event => {
   event.waitUntil(self.clients.claim());
+});
+
+// ------------------------------
+// LISTEN FOR SKIP-WAITING MESSAGE
+// ------------------------------
+self.addEventListener("message", event => {
+  if (event.data && event.data.action === "skipWaiting") {
+    self.skipWaiting();
+  }
 });
 
 // ------------------------------
 // FETCH — network-first for app shell
 // ------------------------------
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", event => {
   const url = new URL(event.request.url);
 
   const isAppShell =
@@ -51,7 +46,7 @@ self.addEventListener("fetch", (event) => {
 
   // Cache-first for static assets
   event.respondWith(
-    caches.open("static-cache").then(async (cache) => {
+    caches.open("static-cache").then(async cache => {
       const cached = await cache.match(event.request);
       if (cached) return cached;
 
