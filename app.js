@@ -1,98 +1,93 @@
-function renderBills() {
-  table.innerHTML = "";
+document.addEventListener("DOMContentLoaded", () => {
 
-  bills.sort((a, b) => new Date(a.due) - new Date(b.due));
+  const form = document.getElementById("bill-form");
+  const table = document.getElementById("bill-table");
+  const themeToggle = document.getElementById("theme-toggle");
 
-  bills.forEach((bill, index) => {
-    const row = document.createElement("tr");
-    if (bill.paid) row.classList.add("paid");
+  let bills = JSON.parse(localStorage.getItem("bills")) || [];
+  let theme = localStorage.getItem("theme") || "light";
 
-    row.innerHTML = `
-      <td>${bill.name}</td>
+  // Apply saved theme
+  document.body.classList.toggle("dark", theme === "dark");
+  themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
 
-      <td class="editable amount-cell">$${bill.amount}</td>
+  function saveBills() {
+    localStorage.setItem("bills", JSON.stringify(bills));
+  }
 
-      <td class="editable due-cell">${bill.due}</td>
+  // Calculate next recurring due date
+  function nextRecurringDate(due, type) {
+    const d = new Date(due);
 
-      <td>${bill.category}</td>
-      <td>${bill.recurring}</td>
+    if (type === "monthly") d.setMonth(d.getMonth() + 1);
+    if (type === "quarterly") d.setMonth(d.getMonth() + 3);
+    if (type === "yearly") d.setFullYear(d.getFullYear() + 1);
 
-      <td>
-        ${bill.link ? `<a href="${bill.link}" target="_blank">Pay</a>` : ""}
-      </td>
+    return d.toISOString().split("T")[0];
+  }
 
-      <td><input type="checkbox" ${bill.paid ? "checked" : ""}></td>
-      <td><button class="delete-btn">X</button></td>
-    `;
+  function renderBills() {
+    table.innerHTML = "";
 
-    // Toggle paid
-    row.querySelector("input").addEventListener("change", () => {
-      bill.paid = !bill.paid;
+    bills.sort((a, b) => new Date(a.due) - new Date(b.due));
 
-      if (bill.paid && bill.recurring !== "none") {
-        bill.due = nextRecurringDate(bill.due, bill.recurring);
-        bill.paid = false;
-      }
+    bills.forEach((bill, index) => {
+      const row = document.createElement("tr");
+      if (bill.paid) row.classList.add("paid");
 
-      saveBills();
-      renderBills();
-    });
+      row.innerHTML = `
+        <td>${bill.name}</td>
 
-    // Delete bill
-    row.querySelector("button").addEventListener("click", () => {
-      bills.splice(index, 1);
-      saveBills();
-      renderBills();
-    });
+        <td class="editable amount-cell">$${bill.amount}</td>
 
-    // Editable amount
-    const amountCell = row.querySelector(".amount-cell");
-    amountCell.addEventListener("click", () => {
-      const input = document.createElement("input");
-      input.type = "number";
-      input.value = bill.amount;
-      input.className = "edit-input";
+        <td class="editable due-cell">${bill.due}</td>
 
-      amountCell.innerHTML = "";
-      amountCell.appendChild(input);
-      input.focus();
+        <td>${bill.category}</td>
+        <td>${bill.recurring}</td>
 
-      const save = () => {
-        bill.amount = input.value;
+        <td>
+          ${bill.link ? `<a href="${bill.link}" target="_blank">Pay</a>` : ""}
+        </td>
+
+        <td><input type="checkbox" ${bill.paid ? "checked" : ""}></td>
+        <td><button class="delete-btn">X</button></td>
+      `;
+
+      // Toggle paid
+      row.querySelector("input").addEventListener("change", () => {
+        bill.paid = !bill.paid;
+
+        if (bill.paid && bill.recurring !== "none") {
+          bill.due = nextRecurringDate(bill.due, bill.recurring);
+          bill.paid = false;
+        }
+
         saveBills();
         renderBills();
-      };
-
-      input.addEventListener("blur", save);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") save();
       });
-    });
 
-    // Editable due date
-    const dueCell = row.querySelector(".due-cell");
-    dueCell.addEventListener("click", () => {
-      const input = document.createElement("input");
-      input.type = "date";
-      input.value = bill.due;
-      input.className = "edit-input";
-
-      dueCell.innerHTML = "";
-      dueCell.appendChild(input);
-      input.focus();
-
-      const save = () => {
-        bill.due = input.value;
+      // Delete bill
+      row.querySelector("button").addEventListener("click", () => {
+        bills.splice(index, 1);
         saveBills();
         renderBills();
-      };
-
-      input.addEventListener("blur", save);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") save();
       });
-    });
 
-    table.appendChild(row);
-  });
-}
+      // Editable amount
+      const amountCell = row.querySelector(".amount-cell");
+      amountCell.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.value = bill.amount;
+        input.className = "edit-input";
+
+        amountCell.innerHTML = "";
+        amountCell.appendChild(input);
+        input.focus();
+
+        const save = () => {
+          bill.amount = input.value;
+          saveBills();
+          renderBills();
+        };
+
