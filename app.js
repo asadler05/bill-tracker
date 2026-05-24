@@ -4,6 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("bill-table");
   const cards = document.getElementById("bill-cards");
   const themeToggle = document.getElementById("theme-toggle");
+  const fab = document.getElementById("fab-add");
+  const formContainer = document.getElementById("form-container");
+
+  /* FAB TOGGLE */
+  fab.addEventListener("click", () => {
+    formContainer.classList.toggle("open");
+    if (formContainer.classList.contains("open")) {
+      document.getElementById("bill-name").focus();
+    }
+  });
 
   let bills = JSON.parse(localStorage.getItem("bills")) || [];
   let theme = localStorage.getItem("theme") || "light";
@@ -40,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${bill.name}</td>
         <td class="editable amount-cell">$${bill.amount}</td>
         <td class="editable due-cell">${bill.due}</td>
-        <td>${bill.category}</td>
         <td>${bill.recurring}</td>
         <td>${bill.link ? `<a href="${bill.link}" target="_blank">Pay</a>` : ""}</td>
         <td><input type="checkbox" ${bill.paid ? "checked" : ""}></td>
@@ -114,11 +123,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="card-row"><strong>Bill:</strong> ${bill.name}</div>
         <div class="card-row editable amount-card"><strong>Amount:</strong> $${bill.amount}</div>
         <div class="card-row editable due-card"><strong>Due:</strong> ${bill.due}</div>
-        <div class="card-row"><strong>Category:</strong> ${bill.category}</div>
         <div class="card-row"><strong>Recurring:</strong> ${bill.recurring}</div>
         <div class="card-row">${bill.link ? `<a href="${bill.link}" target="_blank" class="pay-btn">Pay</a>` : ""}</div>
         <div class="card-row"><label><input type="checkbox" ${bill.paid ? "checked" : ""}> Paid</label></div>
-        <button class="delete-btn">Delete</button>
+        <div class="swipe-delete">Delete</div>
       `;
 
       /* CARD EVENTS */
@@ -132,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBills();
       });
 
-      card.querySelector(".delete-btn").addEventListener("click", () => {
+      card.querySelector(".swipe-delete").addEventListener("click", () => {
         bills.splice(index, 1);
         saveBills();
         renderBills();
@@ -176,51 +184,31 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("keydown", e => e.key === "Enter" && save());
       });
 
+      /* SWIPE TO DELETE */
+      let startX = 0;
+      let swiping = false;
+
+      card.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+        swiping = true;
+      });
+
+      card.addEventListener("touchmove", (e) => {
+        if (!swiping) return;
+        const diff = e.touches[0].clientX - startX;
+        if (diff < -30) card.classList.add("swiped");
+        if (diff > 30) card.classList.remove("swiped");
+      });
+
+      card.addEventListener("touchend", () => {
+        swiping = false;
+      });
+
       cards.appendChild(card);
     });
-
-    /* ---------------- SWIPE TO DELETE (MOBILE) ---------------- */
-
-    let startX = 0;
-    let currentX = 0;
-    let swiping = false;
-
-    card.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX;
-      swiping = true;
-    });
-
-    card.addEventListener("touchmove", (e) => {
-      if (!swiping) return;
-
-      currentX = e.touches[0].clientX;
-      const diff = currentX - startX;
-
-      if (diff < -30) {
-        card.classList.add("swiped");
-      }
-      if (diff > 30) {
-        card.classList.remove("swiped");
-      }
-    });
-
-    card.addEventListener("touchend", () => {
-      swiping = false;
-    });
-
   }
-  const fab = document.getElementById("fab-add");
-  const formContainer = document.getElementById("form-container");
 
-  fab.addEventListener("click", () => {
-    formContainer.classList.toggle("open");
-
-    if (formContainer.classList.contains("open")) {
-      document.getElementById("bill-name").focus();
-    }
-  });
-
-
+  /* FORM SUBMIT */
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -228,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
       name: document.getElementById("bill-name").value,
       amount: document.getElementById("bill-amount").value,
       due: document.getElementById("bill-due").value,
-      category: document.getElementById("bill-category").value,
       recurring: document.getElementById("bill-recurring").value,
       link: document.getElementById("bill-link").value,
       paid: false
@@ -238,17 +225,17 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBills();
     renderBills();
     form.reset();
-
     formContainer.classList.remove("open");
-
   });
 
+  /* THEME TOGGLE */
   themeToggle.addEventListener("click", () => {
     const isDark = document.body.classList.toggle("dark");
     localStorage.setItem("theme", isDark ? "dark" : "light");
     themeToggle.textContent = isDark ? "☀️" : "🌙";
   });
 
+  /* SERVICE WORKER */
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("service-worker.js");
   }

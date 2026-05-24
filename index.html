@@ -21,14 +21,6 @@
       <input type="number" id="bill-amount" placeholder="Amount" required>
       <input type="date" id="bill-due" required>
 
-      <select id="bill-category">
-        <option value="Utilities">Utilities</option>
-        <option value="Housing">Housing</option>
-        <option value="Subscriptions">Subscriptions</option>
-        <option value="Insurance">Insurance</option>
-        <option value="Other">Other</option>
-      </select>
-
       <select id="bill-recurring">
         <option value="none">One-time</option>
         <option value="monthly">Monthly</option>
@@ -38,7 +30,7 @@
 
       <input type="url" id="bill-link" placeholder="Payment URL">
 
-      <button type="submit">Add Bill</button>
+      <button type="submit" class="primary-btn">Add Bill</button>
     </form>
   </div>
 
@@ -49,7 +41,6 @@
         <th>Bill</th>
         <th>Amount</th>
         <th>Due</th>
-        <th>Category</th>
         <th>Recurring</th>
         <th>Pay</th>
         <th>Paid</th>
