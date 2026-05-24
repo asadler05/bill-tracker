@@ -23,9 +23,10 @@
     <form id="bill-form">
       <input id="bill-name" type="text" placeholder="Bill name" required>
       <input id="bill-amount" type="number" step="0.01" inputmode="decimal" placeholder="Amount" required>
-      <input id="bill-due" type="date" required>
+      <input id="bill-due" type="date" placeholder="Due date" required>
 
       <select id="bill-recurring">
+        <option value="" disabled selected hidden>Recurring</option>
         <option value="none">One-time</option>
         <option value="monthly">Monthly</option>
         <option value="quarterly">Quarterly</option>
