@@ -345,7 +345,6 @@ function renderBills() {
         // iOS FIX: focus AFTER append
         setTimeout(() => {
           input.focus();
-          input.showPicker?.();
         }, 50);
 
         const commit = () => {
@@ -354,8 +353,12 @@ function renderBills() {
           setTimeout(renderBills, 150); // allow picker to finish
         };
 
-        input.addEventListener("blur", commit);
-        input.addEventListener("keydown", e => e.key === "Enter" && commit());
+        if (type === "date") {
+          input.addEventListener("change", commit);
+        } else {
+          input.addEventListener("blur", commit);
+          input.addEventListener("keydown", e => e.key === "Enter" && commit());
+        }
       });
     };
 
