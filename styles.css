@@ -329,3 +329,10 @@ body {
 .due-soon {
   border-left: 4px solid #ffd60a;
 }
+
+[data-prefix="$"]::before {
+  content: "$";
+  margin-right: 2px;
+  opacity: 0.8;
+}
+

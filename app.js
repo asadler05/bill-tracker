@@ -206,7 +206,7 @@ function renderBills() {
 
     row.innerHTML = `
       <td class="editable name-cell">${bill.name}</td>
-      <td class="editable amount-cell">$${bill.amount}</td>
+      <td class="editable amount-cell" data-prefix="$">${bill.amount}</td>
       <td class="editable due-cell">${bill.due}</td>
       <td>${bill.recurring}</td>
       <td class="editable link-cell">
@@ -228,12 +228,24 @@ function renderBills() {
       row.querySelector(selector).addEventListener("click", () => {
         const cell = row.querySelector(selector);
         const input = document.createElement("input");
-        input.type = type;
-        input.value = saveFn("get");
+
+        // iOS FIX: set type + inputmode BEFORE setting value or appending
+        if (selector.includes("amount")) {
+          input.setAttribute("type", "text");
+          input.setAttribute("inputmode", "decimal");
+          input.setAttribute("pattern", "[0-9]*\\.?[0-9]*");
+        } else {
+          input.type = type;
+        }
+
         input.className = "edit-input";
+        input.value = saveFn("get");
+
         cell.innerHTML = "";
         cell.appendChild(input);
-        input.focus();
+
+        // iOS FIX: focus AFTER append
+        setTimeout(() => input.focus(), 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
@@ -246,8 +258,9 @@ function renderBills() {
       });
     };
 
+
     makeEditor(".name-cell", "text", (mode, val) => mode === "get" ? bill.name : bill.name = val);
-    makeEditor(".amount-cell", "number", (mode, val) => mode === "get" ? bill.amount : bill.amount = val || "0");
+    makeEditor(".amount-cell", "text", (mode, val) => mode === "get" ? bill.amount : bill.amount = val || "0");
     makeEditor(".due-cell", "date", (mode, val) => mode === "get" ? bill.due : bill.due = val);
 
     makeEditor(".link-cell", "text", (mode, val) => {
@@ -279,7 +292,7 @@ function renderBills() {
         <div class="card-grid">
           <div class="grid-item">
             <label>Amount</label>
-            <div class="value amount-value">$${bill.amount}</div>
+            <div class="value amount-value" data-prefix="$">${bill.amount}</div>
           </div>
 
           <div class="grid-item">
@@ -336,17 +349,24 @@ function renderBills() {
       card.querySelector(selector).addEventListener("click", () => {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
-        input.type = type;
-        input.value = saveFn("get");
+
+        // iOS FIX: set type + inputmode BEFORE setting value or appending
+        if (selector.includes("amount")) {
+          input.setAttribute("type", "text");
+          input.setAttribute("inputmode", "decimal");
+          input.setAttribute("pattern", "[0-9]*\\.?[0-9]*");
+        } else {
+          input.type = type;
+        }
+
         input.className = "edit-input";
+        input.value = saveFn("get");
+
         cell.innerHTML = "";
         cell.appendChild(input);
-        input.focus();
 
-        if (selector.includes("amount")) {
-          input.type = "text";
-          input.inputMode = "decimal";
-        }
+        // iOS FIX: focus AFTER append
+        setTimeout(() => input.focus(), 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
