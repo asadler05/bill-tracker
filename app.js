@@ -342,10 +342,6 @@ function renderBills() {
         cell.innerHTML = "";
         cell.appendChild(input);
 
-        // iOS FIX: focus AFTER append
-        setTimeout(() => {
-          input.focus();
-        }, 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
