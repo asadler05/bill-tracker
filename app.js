@@ -354,8 +354,12 @@ function renderBills() {
           setTimeout(renderBills, 150); // allow picker to finish
         };
 
-        input.addEventListener("blur", commit);
-        input.addEventListener("keydown", e => e.key === "Enter" && commit());
+        if (type === "date") {
+          input.addEventListener("change", commit);
+        } else {
+          input.addEventListener("blur", commit);
+          input.addEventListener("keydown", e => e.key === "Enter" && commit());
+        }
       });
     };
 
