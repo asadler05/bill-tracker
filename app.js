@@ -105,29 +105,6 @@ function togglePaid(bill) {
   renderBills();
 }
 
-// ===============================
-// Drag Reorder
-// ===============================
-let dragIndex = null;
-
-cards.addEventListener("dragstart", e => {
-  dragIndex = Number(e.target.dataset.index);
-  e.dataTransfer.effectAllowed = "move";
-});
-
-cards.addEventListener("dragover", e => {
-  e.preventDefault();
-});
-
-cards.addEventListener("drop", e => {
-  const dropIndex = Number(e.target.closest(".bill-card")?.dataset.index);
-  if (dropIndex >= 0 && dragIndex !== null) {
-    const moved = bills.splice(dragIndex, 1)[0];
-    bills.splice(dropIndex, 0, moved);
-    saveBills();
-    renderBills();
-  }
-});
 
 // ===============================
 // Swipe to Delete
@@ -350,8 +327,7 @@ function renderBills() {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
 
-        card.draggable = false;
-        // iOS FIX: set type + inputmode BEFORE setting value or appending
+                // iOS FIX: set type + inputmode BEFORE setting value or appending
         if (selector.includes("amount")) {
           input.setAttribute("type", "text");
           input.setAttribute("inputmode", "decimal");
@@ -392,9 +368,6 @@ function renderBills() {
 
     // Enable swipe
     enableSwipe(card, index);
-
-    // Enable drag
-    card.draggable = true;
 
     cards.appendChild(card);
   });
