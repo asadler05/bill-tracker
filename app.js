@@ -327,7 +327,7 @@ function renderBills() {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
 
-                // iOS FIX: set type + inputmode BEFORE setting value or appending
+        // iOS FIX: set type + inputmode BEFORE setting value or appending
         if (selector.includes("amount")) {
           input.setAttribute("type", "text");
           input.setAttribute("inputmode", "decimal");
@@ -343,8 +343,10 @@ function renderBills() {
         cell.appendChild(input);
 
         // iOS FIX: focus AFTER append
-        setTimeout(() => input.showPicker?.(), 50);
-        setTimeout(() => input.focus(), 50);
+        setTimeout(() => {
+          input.focus();
+          input.showPicker?.();
+        }, 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
