@@ -307,11 +307,18 @@ body {
 
 
 #app-header {
+  width: 100%;
   text-align: left;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
-  padding: 16px 0;
-  color: white;
+  padding: 18px 0 18px 20px; /* top, right, bottom, left */
+  color: var(--text);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  letter-spacing: 0.3px;
 }
 
 
