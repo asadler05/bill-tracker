@@ -343,6 +343,11 @@ function renderBills() {
         cell.appendChild(input);
         input.focus();
 
+        if (selector.includes("amount")) {
+          input.type = "text";
+          input.inputMode = "decimal";
+        }
+
         const commit = () => {
           saveFn("set", input.value.trim());
           saveBills();
@@ -354,7 +359,7 @@ function renderBills() {
       });
     };
 
-    cardEdit(".amount-value", "number", (mode, val) => mode === "get" ? bill.amount : bill.amount = val || "0");
+    cardEdit(".amount-value", "text", (mode, val) => mode === "get" ? bill.amount : bill.amount = val || "0");
     cardEdit(".due-value", "date", (mode, val) => mode === "get" ? bill.due : bill.due = val);
 
     cardEdit(".link-value", "text", (mode, val) => {
