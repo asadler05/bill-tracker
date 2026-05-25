@@ -325,9 +325,21 @@ function renderBills() {
     const cardEdit = (selector, type, saveFn) => {
       card.querySelector(selector).addEventListener("click", () => {
         const cell = card.querySelector(selector);
+
+        // Guard: if this cell is already being edited, focus the existing input and return
+        if (cell.dataset.editing === "1") {
+          const existing = cell.querySelector("input");
+          if (existing) {
+            try { existing.focus(); } catch { }
+          }
+          return;
+        }
+
+        // Mark as editing
+        cell.dataset.editing = "1";
         const input = document.createElement("input");
 
-                // iOS FIX: set type + inputmode BEFORE setting value or appending
+        // iOS FIX: set type + inputmode BEFORE setting value or appending
         if (selector.includes("amount")) {
           input.setAttribute("type", "text");
           input.setAttribute("inputmode", "decimal");
@@ -342,11 +354,18 @@ function renderBills() {
         cell.innerHTML = "";
         cell.appendChild(input);
 
+        // Prevent clicks on the input from bubbling to the parent cell
+        input.addEventListener("click", e => {
+          e.stopPropagation();
+        }, { capture: true });
+
         // iOS FIX: focus AFTER append
         setTimeout(() => input.showPicker?.(), 50);
         setTimeout(() => input.focus(), 50);
 
         const commit = () => {
+          // clear editing flag before re-render
+          cell.dataset.editing = "";
           saveFn("set", input.value.trim());
           saveBills();
           setTimeout(renderBills, 150); // allow picker to finish
