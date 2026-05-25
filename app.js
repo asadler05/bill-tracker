@@ -118,12 +118,16 @@ function enableSwipe(card, index) {
   const deleteBtn = card.querySelector(".swipe-delete");
 
   card.addEventListener("touchstart", e => {
+    // Don't intercept touches on inputs
+    if (e.target.tagName === "INPUT") return;
     startX = e.touches[0].clientX;
     dragging = true;
   });
 
   card.addEventListener("touchmove", e => {
     if (!dragging) return;
+    // Don't intercept touches on inputs
+    if (e.target.tagName === "INPUT") return;
     currentX = e.touches[0].clientX - startX;
 
     if (currentX < 0) {
@@ -134,6 +138,7 @@ function enableSwipe(card, index) {
   });
 
   card.addEventListener("touchend", () => {
+    if (!dragging) return;
     dragging = false;
 
     if (currentX < -80) {
