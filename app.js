@@ -346,12 +346,11 @@ function renderBills() {
 
     // Inline editors (card)
     const cardEdit = (selector, type, saveFn) => {
-      card.draggable = false;
-
       card.querySelector(selector).addEventListener("click", () => {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
 
+        card.draggable = false;
         // iOS FIX: set type + inputmode BEFORE setting value or appending
         if (selector.includes("amount")) {
           input.setAttribute("type", "text");
@@ -368,12 +367,13 @@ function renderBills() {
         cell.appendChild(input);
 
         // iOS FIX: focus AFTER append
+        setTimeout(() => input.showPicker?.(), 50);
         setTimeout(() => input.focus(), 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
           saveBills();
-          renderBills();
+          setTimeout(renderBills, 150); // allow picker to finish
         };
 
         input.addEventListener("blur", commit);
