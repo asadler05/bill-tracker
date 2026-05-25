@@ -336,17 +336,23 @@ function renderBills() {
       card.querySelector(selector).addEventListener("click", () => {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
-        input.type = type;
-        input.value = saveFn("get");
-        input.className = "edit-input";
-        cell.innerHTML = "";
-        cell.appendChild(input);
-        input.focus();
 
+        // iOS FIX: set type + inputmode BEFORE setting value or appending
         if (selector.includes("amount")) {
           input.type = "text";
           input.inputMode = "decimal";
+        } else {
+          input.type = type;
         }
+
+        input.className = "edit-input";
+        input.value = saveFn("get");
+
+        cell.innerHTML = "";
+        cell.appendChild(input);
+
+        // iOS FIX: focus AFTER append
+        setTimeout(() => input.focus(), 0);
 
         const commit = () => {
           saveFn("set", input.value.trim());
