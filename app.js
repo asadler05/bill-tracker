@@ -368,12 +368,13 @@ function renderBills() {
         cell.appendChild(input);
 
         // iOS FIX: focus AFTER append
+        setTimeout(() => input.showPicker?.(), 50);
         setTimeout(() => input.focus(), 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
           saveBills();
-          renderBills();
+          setTimeout(renderBills, 150); // allow picker to finish
         };
 
         input.addEventListener("blur", commit);
