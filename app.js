@@ -92,8 +92,8 @@ function togglePaid(bill) {
 
     if (recur.includes("month")) {
       d.setMonth(d.getMonth() + 1);
-    } else if (recur.includes("week")) {
-      d.setDate(d.getDate() + 7);
+    } else if (recur.includes("quarter")) {
+      d.setMonth(d.getMonth() + 3);
     } else if (recur.includes("year")) {
       d.setFullYear(d.getFullYear() + 1);
     }
@@ -346,6 +346,8 @@ function renderBills() {
 
     // Inline editors (card)
     const cardEdit = (selector, type, saveFn) => {
+      card.draggable = false;
+
       card.querySelector(selector).addEventListener("click", () => {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
