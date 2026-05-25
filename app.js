@@ -118,16 +118,12 @@ function enableSwipe(card, index) {
   const deleteBtn = card.querySelector(".swipe-delete");
 
   card.addEventListener("touchstart", e => {
-    // Don't intercept touches on inputs
-    if (e.target.tagName === "INPUT") return;
     startX = e.touches[0].clientX;
     dragging = true;
   });
 
   card.addEventListener("touchmove", e => {
     if (!dragging) return;
-    // Don't intercept touches on inputs
-    if (e.target.tagName === "INPUT") return;
     currentX = e.touches[0].clientX - startX;
 
     if (currentX < 0) {
@@ -138,7 +134,6 @@ function enableSwipe(card, index) {
   });
 
   card.addEventListener("touchend", () => {
-    if (!dragging) return;
     dragging = false;
 
     if (currentX < -80) {
@@ -278,8 +273,8 @@ function renderBills() {
           </div>
 
           <div class="grid-item">
-            <label>Due</label>            
-            <div class="value due-value">${bill.due}</div>
+            <label>Due</label>
+            <div class="value due-value">${formatDateMDY(bill.due)}</div>
           </div>
 
           <div class="grid-item">
@@ -332,7 +327,7 @@ function renderBills() {
         const cell = card.querySelector(selector);
         const input = document.createElement("input");
 
-        // iOS FIX: set type + inputmode BEFORE setting value or appending
+                // iOS FIX: set type + inputmode BEFORE setting value or appending
         if (selector.includes("amount")) {
           input.setAttribute("type", "text");
           input.setAttribute("inputmode", "decimal");
@@ -347,6 +342,9 @@ function renderBills() {
         cell.innerHTML = "";
         cell.appendChild(input);
 
+        // iOS FIX: focus AFTER append
+        setTimeout(() => input.showPicker?.(), 50);
+        setTimeout(() => input.focus(), 50);
 
         const commit = () => {
           saveFn("set", input.value.trim());
@@ -354,12 +352,8 @@ function renderBills() {
           setTimeout(renderBills, 150); // allow picker to finish
         };
 
-        if (type === "date") {
-          input.addEventListener("blur", commit);
-        } else {
-          input.addEventListener("blur", commit);
-          input.addEventListener("keydown", e => e.key === "Enter" && commit());
-        }
+        input.addEventListener("blur", commit);
+        input.addEventListener("keydown", e => e.key === "Enter" && commit());
       });
     };
 
