@@ -16,15 +16,11 @@ function displayLink(url) {
 // Format date as MM-DD-YYYY
 function formatDateMDY(dateStr) {
   if (!dateStr) return "";
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr;
 
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const y = d.getFullYear();
-
-  return `${m}-${day}-${y}`;
+  const [y, m, d] = dateStr.split("-");
+  return `${m}-${d}-${y}`;
 }
+
 
 // Soft haptic feedback
 function vibrate(ms) {
@@ -306,6 +302,19 @@ function renderBills() {
       <div class="paid-toggle">✅</div>
       <div class="swipe-delete">Delete</div>
     `;
+
+    const today = new Date();
+    const dueDate = new Date(bill.due);
+
+    if (!bill.paid) {
+      if (dueDate < today) {
+        card.classList.add("overdue");
+      } else {
+        const diff = (dueDate - today) / (1000 * 60 * 60 * 24);
+        if (diff <= 3) card.classList.add("due-soon");
+      }
+    }
+
 
     // Paid toggle (card)
     card.querySelector(".paid-toggle").addEventListener("click", e => {

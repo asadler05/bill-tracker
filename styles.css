@@ -304,3 +304,21 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+
+
+#app-header {
+  text-align: left;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 16px 0;
+  color: white;
+}
+
+
+.overdue {
+  border-left: 4px solid #ff453a;
+}
+
+.due-soon {
+  border-left: 4px solid #ffd60a;
+}
