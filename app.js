@@ -278,8 +278,8 @@ function renderBills() {
           </div>
 
           <div class="grid-item">
-            <label>Due</label>
-            <div class="value due-value">${formatDateMDY(bill.due)}</div>
+            <label>Due</label>            
+            <div class="value due-value">${bill.due}</div>
           </div>
 
           <div class="grid-item">
