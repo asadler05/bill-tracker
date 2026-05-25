@@ -355,7 +355,7 @@ function renderBills() {
         };
 
         if (type === "date") {
-          input.addEventListener("change", commit);
+          input.addEventListener("blur", commit);
         } else {
           input.addEventListener("blur", commit);
           input.addEventListener("keydown", e => e.key === "Enter" && commit());
